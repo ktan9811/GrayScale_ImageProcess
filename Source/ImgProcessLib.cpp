@@ -4,7 +4,7 @@
 #include "ImgProcessLib.h"
 #include "dataType.h"
 
-void ImgPrint(uint8 img[][HEIGHT])
+void ImgPrint(uint8** img, int HEIGHT, int WIDTH)
 {
 	HWND hwnd;
 	HDC hdc;

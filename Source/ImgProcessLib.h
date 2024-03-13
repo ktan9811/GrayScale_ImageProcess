@@ -3,11 +3,7 @@
 #include <iostream>
 #include "dataType.h"
 
-#define HEIGHT 512
-#define WIDTH 512
-
-
-void ImgPrint(uint8 img[][HEIGHT]);
+//void ImgPrint(uint8 img[][HEIGHT]);
 
 //void ImgAdd(uint8 img[][HEIGHT]);
 

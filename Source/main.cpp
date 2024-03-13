@@ -5,17 +5,18 @@
 #include <algorithm>
 #include <conio.h>
 #include <Windows.h>
+#include <math.h>
 #include "dataType.h"
-#include "ImgProcessLib.h"
+//#include "ImgProcessLib.h"
 
-#define HEIGHT 512
-#define WIDTH 512
 
 // º¯¼ö
 
 int line = 0;
-uint8 src[HEIGHT][WIDTH];
-uint8 dst[HEIGHT][WIDTH];
+
+int HEIGHT, WIDTH;
+
+uint8** src, **dst;
 FILE* rfp;
 FILE* wfp;
 uint16 modeCnt[256] = { 0, };
@@ -32,6 +33,7 @@ void ImgSub(uint8 Val);
 void ImgInv();
 void ImgBin();
 void PrintMenu();
+void ImgPrint();
 void ImgLoad();
 void ImgSave();
 
@@ -46,7 +48,7 @@ int main()
 		{
 		case '0':
 			ImgLoad();
-			ImgPrint(dst);
+			ImgPrint();
 			break;
 
 		case '1':
@@ -57,35 +59,35 @@ int main()
 		case 'A':
 			printf("Copy Src to Dst\n");
 			ImgCopy();
-			ImgPrint(dst);
+			ImgPrint();
 			break;
 
 		case 'b':
 		case 'B': 
 			printf("Img Bright\n");
 			ImgAdd(getUint8());
-			ImgPrint(dst);
+			ImgPrint();
 			break;
 
 		case 'c':
 		case 'C':
 			printf("Img Dark\n");
 			ImgSub(getUint8());
-			ImgPrint(dst);
+			ImgPrint();
 			break;
 
 		case 'd':
 		case 'D': 
 			printf("Img Inverse\n");
 			ImgInv();
-			ImgPrint(dst);
+			ImgPrint();
 			break;
 
 		case 'e':
 		case 'E': 
 			printf("Img Binary\n");
 			ImgBin();
-			ImgPrint(dst);
+			ImgPrint();
 			break;
 
 		case 'x':
@@ -95,6 +97,13 @@ int main()
 			break;
 		}
 	}
+
+	for (int i = 0; i < HEIGHT; i++) {
+		free(src[i]);
+		free(dst[i]);
+	}
+	free(src);
+	free(dst);
 	return 0;
 }
 
@@ -153,6 +162,10 @@ char getCh()
 }
 
 void ImgCopy() {
+	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			dst[y][x] = src[y][x];
@@ -161,6 +174,10 @@ void ImgCopy() {
 }
 
 void ImgAdd(uint8 val) {
+	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (src[y][x] < 255 - val) {
@@ -172,6 +189,10 @@ void ImgAdd(uint8 val) {
 }
 
 void ImgSub(uint8 val) {
+	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (src[y][x] < val) {
@@ -183,6 +204,10 @@ void ImgSub(uint8 val) {
 }
 
 void ImgInv() {
+	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			dst[y][x] = 255 - src[y][x];
@@ -191,6 +216,10 @@ void ImgInv() {
 }
 
 void ImgBin() {
+	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
 	char mode = 0;
 	uint8 point = 0;
 	puts("0. Bin by Avg, 1. Bin By Mid, 2. Bin by UserInput");
@@ -219,30 +248,66 @@ void PrintMenu()
 	puts("A.Copy, B.Bright, C.Dark, D.Inverse, E.BinByPoint, X.Quit\n");
 }
 
+void ImgPrint()
+{
+	HWND hwnd;
+	HDC hdc;
+
+	hwnd = GetForegroundWindow();
+	hdc = GetWindowDC(NULL);
+	char keyIn = 0;
+	puts("Printing IMG....... Press 'X' to Quit !");
+	while (true) {
+		for (int i = 0; i < HEIGHT; i++) {
+			for (int j = 0; j < WIDTH; j++) {
+				int px = dst[i][j];
+				SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
+			}
+		}
+		keyIn = _getch();
+		if (keyIn == 'x' || keyIn == 'X') break;
+	}
+
+}
+
 void ImgLoad()
 {
-	int8 route[100] = "./Source/Pet_RAW(squre)/Pet_RAW(512x512)/";
+	int8 route[100] = "./Source/Etc_Raw(squre)/";
 	int8 fName[50];
+	uint64 fsize;
+
 	printf("Flie Name? ");
 	scanf("%s", fName);
 	strcat(route, fName);
-	strcat(route, "_512.raw");
+	strcat(route, ".raw");
 
-	rfp = fopen(route, "rt");
-	fread(src, 1, HEIGHT * WIDTH, rfp);
+	rfp = fopen(route, "rb");
+	fseek(rfp, 5L, SEEK_END);
+	fsize = ftell(rfp);
 	fclose(rfp);
+	HEIGHT = WIDTH = (int)sqrt(fsize);
+
+	src = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		src[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
+	rfp = fopen(route, "rb");
+	for (int i = 0; i < HEIGHT; i++)
+		fread(src[i], sizeof(uint8), WIDTH, rfp);
+	fclose(rfp);
+
 	ImgCopy();
 }
 
 void ImgSave()
 {
-	int8 route[100] = "./Source/Pet_RAW(squre)/Pet_RAW(512x512)/";
+	int8 route[100] = "./Source/Etc_Raw(squre)/";
 	int8 fName[50];
 	
 	printf("Flie Name? ");
 	scanf("%s", fName);
 	strcat(route, fName);
-	strcat(route, "_512.raw");
+	strcat(route, ".raw");
 
 	wfp = fopen(route, "wb");
 	for (int i = 0; i < HEIGHT; i++)
