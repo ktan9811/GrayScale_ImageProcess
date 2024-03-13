@@ -39,3 +39,8 @@
 .vs/
 x64/
 
+#Img, Output Files
+*.raw
+*.png
+*.jpg
+
