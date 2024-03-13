@@ -33,3 +33,5 @@
 
 #VS Project File
 *.vcxproj
+*.vcxproj.*
+
