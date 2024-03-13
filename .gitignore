@@ -35,3 +35,7 @@
 *.vcxproj
 *.vcxproj.*
 
+#Directory
+.vs/
+x64/
+
