@@ -221,7 +221,7 @@ void PrintMenu()
 
 void ImgLoad()
 {
-	int8 route[100] = "./Pet_RAW(squre)/Pet_RAW(512x512)/";
+	int8 route[100] = "./Source/Pet_RAW(squre)/Pet_RAW(512x512)/";
 	int8 fName[50];
 	printf("Flie Name? ");
 	scanf("%s", fName);
@@ -236,7 +236,7 @@ void ImgLoad()
 
 void ImgSave()
 {
-	int8 route[100] = "./Pet_RAW(squre)/Pet_RAW(512x512)/";
+	int8 route[100] = "./Source/Pet_RAW(squre)/Pet_RAW(512x512)/";
 	int8 fName[50];
 	
 	printf("Flie Name? ");
