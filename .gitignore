@@ -36,6 +36,6 @@
 *.vcxproj.*
 
 #Directory
-.vs
-x64
+.vs/
+x64/
 
