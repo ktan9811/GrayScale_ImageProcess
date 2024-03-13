@@ -32,6 +32,7 @@ void ImgAdd(uint8 Val);
 void ImgSub(uint8 Val);
 void ImgInv();
 void ImgBin();
+void ImgGamma();
 void PrintMenu();
 void ImgPrint();
 void ImgLoad();
@@ -87,6 +88,13 @@ int main()
 		case 'E': 
 			printf("Img Binary\n");
 			ImgBin();
+			ImgPrint();
+			break;
+
+		case 'f':
+		case 'F':
+			printf("Img Gamma\n");
+			ImgGamma();
 			ImgPrint();
 			break;
 
@@ -239,6 +247,26 @@ void ImgBin() {
 		}
 	}
 	printf("point : %d\n", point);
+}
+
+void ImgGamma()
+{
+	float gamma;
+	printf("Write Gamma Value : 0.2 ~ 1.8\nValue ? : ");
+	scanf("%f", &gamma);
+
+	if (gamma < 0.2 || gamma > 1.8) return;
+
+	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
+
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			dst[y][x] = (uint8)(255 * pow(255 / src[y][x], gamma));
+		}
+	}
 }
 
 void PrintMenu()
