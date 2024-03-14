@@ -1,14 +1,28 @@
 #pragma once
-
+#define  _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include "dataType.h"
+#include "utility.h"
 
-//void ImgPrint(uint8 img[][HEIGHT]);
+struct IMG
+{
+	uint8** iptr = nullptr;
+	int HEIGHT = 0, WIDTH = 0;
+};
 
-//void ImgAdd(uint8 img[][HEIGHT]);
+// Mem
+uint8** _2dMalloc(IMG img);
+void _2dFree(IMG img);
 
-//void ImgSub(uint8 img[][HEIGHT]);
+//FILE
+void ImgPrint(IMG img);
+IMG ImgLoad(FILE* rfp);
+void ImgSave(IMG img, FILE* wfp);
 
-//void ImgInv(uint8 img[][HEIGHT]);
 
-//void ImgBin(uint8 img[][HEIGHT]);
+IMG ImgCopy(IMG img);
+IMG ImgAdd(IMG img, uint8 Val); 
+IMG ImgSub(IMG img, uint8 Val); 
+IMG ImgInv(IMG img); 
+void ImgBin(); 
+void ImgGamma();
