@@ -9,3 +9,10 @@
 #define uint16 unsigned __int16
 #define uint32 unsigned __int32
 #define uint64 unsigned __int64
+
+
+struct IMG
+{
+	uint8** iptr = nullptr;
+	int HEIGHT = 0, WIDTH = 0;
+};

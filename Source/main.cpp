@@ -10,23 +10,12 @@
 #include "ImgProcessLib.h"
 #include "utility.h"
 
-
-// 변수
-
-int line = 0;
-
 FILE* rfp;
 FILE* wfp;
-uint16 modeCnt[256] = { 0, };
-
-// 전방선언
-//void ImgCopy(); void ImgAdd(uint8 Val); void ImgSub(uint8 Val); void ImgInv(); void ImgBin(); void ImgGamma();
-
-
-
 
 int main()
 {
+
 	IMG srcImg;
 	IMG dstImg;
 
@@ -46,58 +35,71 @@ int main()
 			ImgSave(dstImg, wfp);
 			break;
 
-		case 'a':
-		case 'A':
+		case 'a': case 'A':
 			_2dFree(dstImg);
-			printf("Copy Src to Dst\n");
 			dstImg = ImgCopy(srcImg);
-			//printf("%d %d", dstImg.HEIGHT, dstImg.WIDTH);
 			ImgPrint(dstImg);
 			break;
 
-		case 'b':
-		case 'B':
+		case 'b': case 'B':
 			_2dFree(dstImg);
-			printf("Img Bright\n");
 			dstImg = ImgAdd(srcImg, getUint8());
 			ImgPrint(dstImg);
 			break;
 
-		case 'c':
-		case 'C':
+		case 'c': case 'C':
 			_2dFree(dstImg);
-			printf("Img Dark\n");
 			dstImg = ImgSub(srcImg, getUint8());
 			ImgPrint(dstImg);
 			break;
 
-		case 'd':
-		case 'D': 
+		case 'd': case 'D': 
 			_2dFree(dstImg);
-			printf("Img Inverse\n");
 			dstImg = ImgInv(srcImg);
 			ImgPrint(dstImg);
 			break;
 
-		//case 'e':
-		//case 'E': 
-		//	printf("Img Binary\n");
-		//	ImgBin();
-		//	ImgPrint();
-		//	break;
-
-		//case 'f':
-		//case 'F':
-		//	printf("Img Gamma\n");
-		//	ImgGamma();
-		//	ImgPrint();
-		//	break;
-
-		case 'x':
-		case 'X':
-			return 0;
-		default:
+		case 'e': case 'E': 
+			_2dFree(dstImg);			
+			dstImg = ImgBin(srcImg);
+			ImgPrint(dstImg);
 			break;
+
+		case 'f': case 'F':
+			_2dFree(dstImg);
+			dstImg = ImgGamma(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'g': case 'G':
+			_2dFree(dstImg);
+			dstImg = ZoomIn2(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'h': case 'H':
+			_2dFree(dstImg);
+			dstImg = ZoomOut2(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'i': case 'I':
+			_2dFree(dstImg);
+			dstImg = ReverseX(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'j': case 'J':
+			_2dFree(dstImg);
+			dstImg = RotateDegree(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+
+		case 'x': case 'X':
+			_2dFree(srcImg);
+			_2dFree(dstImg);
+			return 0;
 		}
 	}
 
@@ -105,42 +107,3 @@ int main()
 	_2dFree(dstImg);
 	return 0;
 }
-
-// 함수 선언부
-
-//int RetMid() {
-//	int mode, mid = 0;
-//	for (int y = 0; y < HEIGHT; y++) {
-//		for (int x = 0; x < WIDTH; x++) {
-//			modeCnt[src[y][x]] += 1;
-//		}
-//	}
-//	int tempVal = 0;
-//
-//	for (int i = 0; i < 256; i++) {
-//		if (tempVal < modeCnt[i]) {
-//			tempVal = modeCnt[i];
-//			mode = i;
-//		}
-//	}
-//
-//	int tempCnt = 0;
-//	for (int i = 0; i < 256; i++) {
-//		tempCnt += modeCnt[i];
-//		if (tempCnt >= (int)(WIDTH * HEIGHT / 2)) {
-//			mid = i;
-//			break;
-//		}
-//	}
-//	return mid;
-//}
-//
-//int RetAvg() {
-//	int sum = 0;
-//	for (int y = 0; y < HEIGHT; y++) {
-//		for (int x = 0; x < WIDTH; x++) {
-//			sum += src[y][x];
-//		}
-//	}
-//	return sum / (HEIGHT * WIDTH);
-//}

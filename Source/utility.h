@@ -9,3 +9,7 @@ uint8 getUint8();
 char getCh();
 
 void PrintMenu();
+
+int RetMid(IMG img);
+
+int RetAvg(IMG img);

@@ -6,6 +6,7 @@
 #include "dataType.h"
 
 
+
 uint8** _2dMalloc(IMG img)
 {
 	int HEIGHT = img.HEIGHT;
@@ -198,48 +199,171 @@ IMG ImgInv(IMG img) {
 	return RET;
 }
 
-//void ImgBin() {
-//	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
-//	for (int i = 0; i < HEIGHT; i++)
-//		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
-//
-//	char mode = 0;
-//	uint8 point = 0;
-//	puts("0. Bin by Avg, 1. Bin By Mid, 2. Bin by UserInput");
-//	printf("Select Mode : ");
-//	mode = getCh();
-//
-//	if (mode == '0')	point = RetAvg();
-//	else if (mode == '1') point = RetMid();
-//	else point = getUint8();
-//
-//	for (int y = 0; y < HEIGHT; y++) {
-//		for (int x = 0; x < WIDTH; x++) {
-//			if (src[y][x] < point) {
-//				dst[y][x] = 0;
-//			}
-//			else dst[y][x] = 255;
-//		}
-//	}
-//	printf("point : %d\n", point);
-//}
-//
-//void ImgGamma()
-//{
-//	float gamma;
-//	printf("Write Gamma Value : 0.2 ~ 1.8\nValue ? : ");
-//	scanf("%f", &gamma);
-//
-//	if (gamma < 0.2 || gamma > 1.8) return;
-//
-//	dst = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
-//	for (int i = 0; i < HEIGHT; i++)
-//		dst[i] = (uint8*)malloc(sizeof(uint8) * WIDTH);
-//
-//
-//	for (int y = 0; y < HEIGHT; y++) {
-//		for (int x = 0; x < WIDTH; x++) {
-//			dst[y][x] = (uint8)(255 * pow(255 / src[y][x], gamma));
-//		}
-//	}
-//}
+IMG ImgBin(IMG img) {
+	
+	char mode = 0;
+	uint8 point = 0;
+	puts("0. Bin by Avg, 1. Bin By Mid, 2. Bin by UserInput");
+	printf("Select Mode : ");
+	mode = getCh();
+
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+
+	RET.iptr = _2dMalloc(RET);
+
+
+	if (mode == '0')	point = RetAvg(img);
+	else if (mode == '1') point = RetMid(img);
+	else point = getUint8();
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (imptr[y][x] < point) {
+				RET.iptr[y][x] = 0;
+			}
+			else RET.iptr[y][x] = 255;
+		}
+	}
+	printf("point : %d\n", point);
+
+	return RET;
+}
+
+IMG ImgGamma(IMG img)
+{
+	float gamma;
+	printf("Write Gamma Value : 0.2 ~ 1.8\nValue ? : ");
+	scanf("%f", &gamma);
+
+	if (gamma < 0.2 || gamma > 1.8) return img;
+
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+
+	RET.iptr = _2dMalloc(RET);
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			RET.iptr[y][x] = (uint8)(255 * pow(255 / imptr[y][x], gamma));
+		}
+	}
+
+	return RET;
+}
+
+
+IMG ZoomIn2(IMG img)
+{
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = (int)(HEIGHT * 2);
+	RET.WIDTH = (int)(WIDTH * 2);
+
+	RET.iptr = _2dMalloc(RET);
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			RET.iptr[y * 2][x * 2] = imptr[y][x];
+		}
+	}
+
+	return RET;
+}
+
+IMG ZoomOut2(IMG img)
+{
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = (int)(HEIGHT / 2);
+	RET.WIDTH = (int)(WIDTH / 2);
+
+	RET.iptr = _2dMalloc(RET);
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			RET.iptr[int(y / 2)][int(x / 2)] = imptr[y][x];
+		}
+	}
+	return RET;
+}
+
+IMG ReverseX(IMG img)
+{
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+
+	RET.iptr = _2dMalloc(RET);
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			RET.iptr[y][x] ^= imptr[y][WIDTH - x - 1];
+			imptr[y][WIDTH - x - 1] ^= RET.iptr[y][x];
+			RET.iptr[y][x] ^= imptr[y][WIDTH - x - 1];
+		}
+	}
+	return RET;
+}
+
+IMG RotateDegree(IMG img)
+{
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+
+	RET.iptr = _2dMalloc(RET);
+	
+	uint8 degree = getUint8();
+	double radian = -degree * 3.141592 / 180.0;
+
+	int cx = HEIGHT / 2;
+	int cy = WIDTH / 2;
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			int xd = y;
+			int yd = x;
+
+			int xs = (int)(cos(radian) * (xd - cx) + sin(radian) * (yd - cy));
+			int ys = (int)(-sin(radian) * (xd - cx) + cos(radian) * (yd - cy));
+			xs += cx;
+			ys += cy;
+
+			if ((0 <= xs && xs < RET.HEIGHT) && (0 <= ys && ys < RET.WIDTH))
+				RET.iptr[xd][yd] = imptr[xs][ys];
+		}
+	}
+	return RET;
+}
+
