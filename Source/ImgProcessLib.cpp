@@ -34,6 +34,7 @@ void _2dFree(IMG img)
 
 void ImgPrint(IMG img)
 {
+	system("cls");
 	int HEIGHT = img.HEIGHT;
 	int WIDTH = img.WIDTH;
 	uint8** ptr = img.iptr;
@@ -42,17 +43,12 @@ void ImgPrint(IMG img)
 
 	hwnd = GetForegroundWindow();
 	hdc = GetWindowDC(NULL);
-	char keyIn = 0;
-	puts("Printing IMG....... Press 'X' to Quit !");
-	while (true) {
-		for (int i = 0; i < HEIGHT; i++) {
-			for (int j = 0; j < WIDTH; j++) {
-				int px = ptr[i][j];
-				SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
-			}
+
+	for (int i = 0; i < HEIGHT; i++) {
+		for (int j = 0; j < WIDTH; j++) {
+			int px = ptr[i][j];
+			SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
 		}
-		keyIn = _getch();
-		if (keyIn == 'x' || keyIn == 'X') break;
 	}
 }
 
@@ -367,3 +363,28 @@ IMG RotateDegree(IMG img)
 	return RET;
 }
 
+/*
+void ImgPrint(IMG img)
+{
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** ptr = img.iptr;
+	HWND hwnd;
+	HDC hdc;
+
+	hwnd = GetForegroundWindow();
+	hdc = GetWindowDC(NULL);
+	char keyIn = 0;
+	puts("Printing IMG....... Press 'X' to Quit !");
+	while (true) {
+		for (int i = 0; i < HEIGHT; i++) {
+			for (int j = 0; j < WIDTH; j++) {
+				int px = ptr[i][j];
+				SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
+			}
+		}
+		keyIn = _getch();
+		if (keyIn == 'x' || keyIn == 'X') break;
+	}
+}
+*/
