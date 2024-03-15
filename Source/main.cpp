@@ -13,6 +13,7 @@
 FILE* rfp;
 FILE* wfp;
 
+
 int main()
 {
 
@@ -27,6 +28,7 @@ int main()
 		switch (inKey)
 		{
 		case '0':
+			FreeImg(srcImg);
 			srcImg = ImgLoad(rfp);
 			ImgPrint(srcImg);
 			break;
@@ -35,75 +37,96 @@ int main()
 			ImgSave(dstImg, wfp);
 			break;
 
+		case '2':
+			FreeImg(srcImg);
+			srcImg = ImgCopy(dstImg);
+			break;
+
 		case 'a': case 'A':
-			_2dFree(dstImg);
-			dstImg = ImgCopy(srcImg);
-			ImgPrint(dstImg);
+			ImgPrint(srcImg);
 			break;
 
 		case 'b': case 'B':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ImgAdd(srcImg, getUint8());
 			ImgPrint(dstImg);
 			break;
 
 		case 'c': case 'C':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ImgSub(srcImg, getUint8());
 			ImgPrint(dstImg);
 			break;
 
 		case 'd': case 'D': 
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ImgInv(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 		case 'e': case 'E': 
-			_2dFree(dstImg);			
+			FreeImg(dstImg);			
 			dstImg = ImgBin(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 		case 'f': case 'F':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ImgGamma(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 		case 'g': case 'G':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ZoomIn2(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 		case 'h': case 'H':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ZoomOut2(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 		case 'i': case 'I':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = ReverseX(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 		case 'j': case 'J':
-			_2dFree(dstImg);
+			FreeImg(dstImg);
 			dstImg = RotateDegree(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'k': case 'K':
+			FreeImg(dstImg);
+			dstImg = HistStretch(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'l': case 'L':
+			FreeImg(dstImg);
+			dstImg = HistEqual(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'm': case 'M':
+			FreeImg(dstImg);
+			dstImg = Embossing(srcImg);
 			ImgPrint(dstImg);
 			break;
 
 
 		case 'x': case 'X':
-			_2dFree(srcImg);
-			_2dFree(dstImg);
+			FreeImg(srcImg);
+			FreeImg(dstImg);
 			return 0;
 		}
 	}
 
-	_2dFree(srcImg);
-	_2dFree(dstImg);
+	FreeImg(srcImg);
+	FreeImg(dstImg);
 	return 0;
 }
