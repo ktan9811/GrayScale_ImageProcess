@@ -10,7 +10,6 @@
 #define uint32 unsigned __int32
 #define uint64 unsigned __int64
 
-
 struct IMG
 {
 	uint8** iptr = nullptr;

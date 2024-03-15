@@ -3,10 +3,14 @@
 #include <iostream>
 #include "dataType.h"
 #include "utility.h"
+#include "Mask.h"
 
 // Memory Allocation
-uint8** _2dMalloc(IMG img);
-void _2dFree(IMG img);
+uint8** MallocImg(IMG img);
+void FreeImg(IMG img);
+
+double** Malloc2DArr(double** Arr, int Y, int X);
+void Free2DArr(double** Arr, int Y, int X);
 
 // IMG FILE IO
 void ImgPrint(IMG img);
@@ -23,17 +27,24 @@ IMG ImgInv(IMG img);
 IMG ImgBin(IMG img); 
 IMG ImgGamma(IMG img);
 
+IMG HistStretch(IMG img);
+IMG HistEqual(IMG img);
+IMG HistNorm(IMG img);
+
 // 扁窍切 贸府 (Geometric Processing)
 IMG ZoomIn2(IMG img);
 IMG ZoomOut2(IMG img);
 
 IMG ReverseX(IMG img);
 //IMG ReverseY(IMG img);
-
 //IMG MoveXY(IMG img);
+
 IMG RotateDegree(IMG img);
 
-// 康开 贸府 (Area Processing)
+
+//  拳家 康开 贸府 (Area Processing) Convolution / filter
+IMG Embossing(IMG img);
+IMG Gaussian(IMG img);
 
 
 // 橇饭烙 贸府 (Frame Processing)

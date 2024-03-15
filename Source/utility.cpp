@@ -19,8 +19,10 @@ char getCh()
 void PrintMenu()
 {
 	puts("GrayScale IMG Processing\n");
-	puts("0.Open, 1.Save 2.Close\n");
-	puts("A.Copy, B.Bright, C.Dark, D.Inverse, E.BinByPoint, X.Quit\n");
+	puts("0.Open, 1.Save 2.Copy to Src\n");
+	puts("A.Print Src, B.Bright, C.Dark, D.Inverse, E.BinByPoint, F.Gamma\n");
+	puts("G.Zoom In, H.Zoom Out, I.ReverseX, J.Rotate By Degree\n");
+	puts("K.Hist Strech, L.Hist Equal, X.Quit\n");
 }
 
 int RetMid(IMG img) {
@@ -28,26 +30,26 @@ int RetMid(IMG img) {
 	int WIDTH = img.WIDTH;
 	uint8** ptr = img.iptr;
 
-	uint16 modeCnt[256] = { 0, };
+	uint16 Hist[256] = { 0, };
 
 	int mode, mid = 0;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			modeCnt[ptr[y][x]] += 1;
+			Hist[ptr[y][x]] += 1;
 		}
 	}
 	int tempVal = 0;
 
 	for (int i = 0; i < 256; i++) {
-		if (tempVal < modeCnt[i]) {
-			tempVal = modeCnt[i];
+		if (tempVal < Hist[i]) {
+			tempVal = Hist[i];
 			mode = i;
 		}
 	}
 
 	int tempCnt = 0;
 	for (int i = 0; i < 256; i++) {
-		tempCnt += modeCnt[i];
+		tempCnt += Hist[i];
 		if (tempCnt >= (int)(WIDTH * HEIGHT / 2)) {
 			mid = i;
 			break;
