@@ -7,7 +7,7 @@
 
 
 
-uint8** MallocImg(IMG img)
+uint8** _2dMalloc(IMG img)
 {
 	int HEIGHT = img.HEIGHT;
 	int WIDTH = img.WIDTH;
@@ -18,7 +18,7 @@ uint8** MallocImg(IMG img)
 	return img.iptr;
 }
 
-void FreeImg(IMG img)
+void _2dFree(IMG img)
 {
 	uint8** imptr = img.iptr;
 	int HEIGHT = img.HEIGHT;
@@ -30,23 +30,6 @@ void FreeImg(IMG img)
 		free(imptr[i]);
 	free(imptr);
 }
-
-
-double** Malloc2DArr(double** Arr, int Y, int X)
-{
-	Arr = (double**)malloc(sizeof(double*) * Y);
-	for (int i = 0; i < Y; i++)
-		Arr[i] = (double*)malloc(sizeof(double) * X);
-	return Arr;
-}
-
-void Free2DArr(double** Arr, int Y, int X)
-{
-	for (int i = 0; i < Y; i++) 
-		free(Arr[i]);
-	free(Arr);
-}
-
 
 
 void ImgPrint(IMG img)
@@ -82,8 +65,6 @@ IMG ImgLoad(FILE* rfp)
 	strcat(route, ".raw");
 
 	rfp = fopen(route, "rb");
-
-
 	fseek(rfp, 5L, SEEK_END);
 	fsize = ftell(rfp);
 	fclose(rfp);
@@ -134,7 +115,7 @@ IMG ImgCopy(IMG img) {
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			RET.iptr[y][x] = imptr[y][x];
@@ -153,7 +134,7 @@ IMG ImgAdd(IMG img, uint8 val) {
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -176,11 +157,11 @@ IMG ImgSub(IMG img, uint8 val) {
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (imptr[y][x] > val) {
+			if (imptr[y][x] < val) {
 				RET.iptr[y][x] = imptr[y][x] - val;
 			}
 			else RET.iptr[y][x] = 0;
@@ -199,7 +180,7 @@ IMG ImgInv(IMG img) {
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	RET.iptr = (uint8**)malloc(sizeof(uint8*) * HEIGHT);
 	for (int i = 0; i < HEIGHT; i++)
@@ -231,7 +212,7 @@ IMG ImgBin(IMG img) {
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 
 	if (mode == '0')	point = RetAvg(img);
@@ -268,7 +249,7 @@ IMG ImgGamma(IMG img)
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -276,96 +257,6 @@ IMG ImgGamma(IMG img)
 		}
 	}
 
-	return RET;
-}
-
-IMG HistStretch(IMG img)
-{
-	IMG RET;
-
-	int HEIGHT = img.HEIGHT;
-	int WIDTH = img.WIDTH;
-	uint8** imptr = img.iptr;
-
-	RET.HEIGHT = HEIGHT;
-	RET.WIDTH = WIDTH;
-
-	RET.iptr = MallocImg(RET);
-
-	uint8 high = 0, low = 255;
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			if (imptr[y][x] > high) high = imptr[y][x];
-			if (imptr[y][x] < low) low = imptr[y][x];
-		}
-	}
-
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[y][x] = (uint8)(((imptr[y][x] - low) / (float)(high - low)) * 255);
-		}
-	}
-
-	return RET;
-}
-
-IMG HistEqual(IMG img)
-{
-	IMG RET;
-
-	int HEIGHT = img.HEIGHT;
-	int WIDTH = img.WIDTH;
-	uint8** imptr = img.iptr;
-
-	RET.HEIGHT = HEIGHT;
-	RET.WIDTH = WIDTH;
-
-	RET.iptr = MallocImg(RET);
-
-	
-	int Hist[256] = {0, };
-	int HistSum[256] = {0, };
-
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++)
-			Hist[imptr[y][x]]++;
-	}
-
-	for (int i = 1; i < 256; i++) {
-		HistSum[i] = HistSum[i - 1] + Hist[i];
-	}
-
-	double HistNorm[256] = { 1.0, };
-	for (int i = 0; i < 256; i++) {
-		HistNorm[i] = HistSum[i] * (1.0 / (HEIGHT * WIDTH)) * 255.0;
-	}
-
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[y][x] = (uint8)HistNorm[imptr[y][x]];
-		}
-	}
-	return RET;
-}
-
-IMG HistNorm(IMG img)
-{
-	IMG RET;
-
-	int HEIGHT = img.HEIGHT;
-	int WIDTH = img.WIDTH;
-	uint8** imptr = img.iptr;
-
-	RET.HEIGHT = HEIGHT;
-	RET.WIDTH = WIDTH;
-
-	RET.iptr = MallocImg(RET);
-
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[y][x] = imptr[y][x];
-		}
-	}
 	return RET;
 }
 
@@ -381,7 +272,7 @@ IMG ZoomIn2(IMG img)
 	RET.HEIGHT = (int)(HEIGHT * 2);
 	RET.WIDTH = (int)(WIDTH * 2);
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -403,7 +294,7 @@ IMG ZoomOut2(IMG img)
 	RET.HEIGHT = (int)(HEIGHT / 2);
 	RET.WIDTH = (int)(WIDTH / 2);
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -424,7 +315,7 @@ IMG ReverseX(IMG img)
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -447,7 +338,7 @@ IMG RotateDegree(IMG img)
 	RET.HEIGHT = HEIGHT;
 	RET.WIDTH = WIDTH;
 
-	RET.iptr = MallocImg(RET);
+	RET.iptr = _2dMalloc(RET);
 	
 	uint8 degree = getUint8();
 	double radian = -degree * 3.141592 / 180.0;
@@ -472,51 +363,28 @@ IMG RotateDegree(IMG img)
 	return RET;
 }
 
-IMG Embossing(IMG img)
+/*
+void ImgPrint(IMG img)
 {
-	IMG RET, TEMP;
-	double MASK[3][3] = {{1, 1, 0}, {1, 0, -1}, {0, -1, -1}};
-
 	int HEIGHT = img.HEIGHT;
 	int WIDTH = img.WIDTH;
-	uint8** imptr = img.iptr;
+	uint8** ptr = img.iptr;
+	HWND hwnd;
+	HDC hdc;
 
-	RET.HEIGHT = HEIGHT;
-	RET.WIDTH = WIDTH;
-	RET.iptr = MallocImg(RET);
-
-	TEMP.HEIGHT = HEIGHT + 2;
-	TEMP.WIDTH = WIDTH + 2;
-	TEMP.iptr = MallocImg(TEMP);
-	
-	//TEMP 초기화
-	uint8 val = 127;
-	for (int y = 0; y < HEIGHT + 2; y++) {
-		for (int x = 0; x < WIDTH + 2; x++) {
-			TEMP.iptr[y][x] = val;
-		}
-	}
-	for (int y = 1; y < HEIGHT + 1; y++) {
-		for (int x = 1; x < WIDTH + 1; x++) {
-			TEMP.iptr[y][x] = imptr[y - 1][x - 1];
-		}
-	}
-	//출력 이미지 생성
-	double S = 0.0;
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			S = 0.0;
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					S += (double)(MASK[i][j] * TEMP.iptr[y + i][x + j]);
-				}
+	hwnd = GetForegroundWindow();
+	hdc = GetWindowDC(NULL);
+	char keyIn = 0;
+	puts("Printing IMG....... Press 'X' to Quit !");
+	while (true) {
+		for (int i = 0; i < HEIGHT; i++) {
+			for (int j = 0; j < WIDTH; j++) {
+				int px = ptr[i][j];
+				SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
 			}
-			RET.iptr[y][x] = (uint8) S;
 		}
+		keyIn = _getch();
+		if (keyIn == 'x' || keyIn == 'X') break;
 	}
-
-	//마스크와 임시 그림 Free
-	FreeImg(TEMP);
-	return RET;
 }
-
+*/
