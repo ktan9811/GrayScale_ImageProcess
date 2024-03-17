@@ -9,8 +9,8 @@
 uint8** MallocImg(IMG img);
 void FreeImg(IMG img);
 
-double** Malloc2DArr(double** Arr, int Y, int X);
-void Free2DArr(double** Arr, int Y, int X);
+double** MallocMSK(MSK mask);
+void FreeMask(MSK mask);
 
 // IMG FILE IO
 void ImgPrint(IMG img);

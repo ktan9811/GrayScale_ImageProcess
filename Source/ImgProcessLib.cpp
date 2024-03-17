@@ -32,19 +32,29 @@ void FreeImg(IMG img)
 }
 
 
-double** Malloc2DArr(double** Arr, int Y, int X)
+
+double** MallocMSK(MSK mask)
 {
-	Arr = (double**)malloc(sizeof(double*) * Y);
-	for (int i = 0; i < Y; i++)
-		Arr[i] = (double*)malloc(sizeof(double) * X);
-	return Arr;
+	uint8 HEIGHT = mask.Ksize;
+	uint8 WIDTH = mask.Ksize;
+
+	mask.Mptr = (double**)malloc(sizeof(double*) * HEIGHT);
+	for (int i = 0; i < HEIGHT; i++)
+		mask.Mptr[i] = (double*)malloc(sizeof(double) * WIDTH);
+
+	return mask.Mptr;
 }
 
-void Free2DArr(double** Arr, int Y, int X)
+void FreeMask(MSK mask)
 {
-	for (int i = 0; i < Y; i++) 
-		free(Arr[i]);
-	free(Arr);
+	double** mptr = mask.Mptr;
+	int HEIGHT = mask.Ksize;
+
+	if (!mptr) return;
+
+	for (int i = 0; i < HEIGHT; i++)
+		free(mptr[i]);
+	free(mptr);
 }
 
 
@@ -67,12 +77,13 @@ void ImgPrint(IMG img)
 			SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
 		}
 	}
+
 }
 
 IMG ImgLoad(FILE* rfp)
 {
 	IMG RET;
-	int8 route[100] = "./Source/Etc_Raw(squre)/";
+	int8 route[100] = "E:/LocalGit/Cpp_imgProcess/Source/Etc_Raw(squre)/";
 	int8 fName[50];
 	uint64 fsize;
 
@@ -107,7 +118,7 @@ void ImgSave(IMG img, FILE* wfp)
 	int WIDTH = img.WIDTH;
 	uint8** ptr = img.iptr;
 
-	int8 route[100] = "./Source/Etc_Raw(squre)/";
+	int8 route[100] = "E:/LocalGit/Cpp_imgProcess/Source/Etc_Raw(squre)/";
 	int8 fName[50];
 
 	printf("Flie Name? ");
@@ -122,7 +133,6 @@ void ImgSave(IMG img, FILE* wfp)
 	printf("Saved! \n");
 	return;
 }
-
 
 IMG ImgCopy(IMG img) {
 	IMG RET;
@@ -475,7 +485,11 @@ IMG RotateDegree(IMG img)
 IMG Embossing(IMG img)
 {
 	IMG RET, TEMP;
-	double MASK[3][3] = {{1, 1, 0}, {1, 0, -1}, {0, -1, -1}};
+	
+	// 마스크 생성
+	MSK Mask;
+	uint8 ksize = 3;
+	Mask = setEmMask(ksize);
 
 	int HEIGHT = img.HEIGHT;
 	int WIDTH = img.WIDTH;
@@ -489,6 +503,7 @@ IMG Embossing(IMG img)
 	TEMP.WIDTH = WIDTH + 2;
 	TEMP.iptr = MallocImg(TEMP);
 	
+
 	//TEMP 초기화
 	uint8 val = 127;
 	for (int y = 0; y < HEIGHT + 2; y++) {
@@ -506,9 +521,9 @@ IMG Embossing(IMG img)
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			S = 0.0;
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					S += (double)(MASK[i][j] * TEMP.iptr[y + i][x + j]);
+			for (int i = 0; i < Mask.Ksize; i++) {
+				for (int j = 0; j < Mask.Ksize; j++) {
+					S += (double)(Mask.Mptr[i][j] * TEMP.iptr[y + i][x + j]);
 				}
 			}
 			RET.iptr[y][x] = (uint8) S;
@@ -516,6 +531,7 @@ IMG Embossing(IMG img)
 	}
 
 	//마스크와 임시 그림 Free
+	FreeMask(Mask);
 	FreeImg(TEMP);
 	return RET;
 }

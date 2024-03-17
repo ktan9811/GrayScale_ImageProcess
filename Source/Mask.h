@@ -4,8 +4,8 @@
 
 struct MSK
 {
-	double** Mptr;
-	int Ksize;
+	double** Mptr = nullptr;
+	uint8 Ksize = 3;
 };
 
 MSK setEmMask(uint8 Ksize);
