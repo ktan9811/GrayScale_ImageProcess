@@ -1,9 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <time.h>
-#include <random>
-#include <algorithm>
-#include <conio.h>
 #include <Windows.h>
 #include <math.h>
 #include "dataType.h"
@@ -19,7 +16,8 @@ int main()
 
 	IMG srcImg;
 	IMG dstImg;
-
+	srcImg.iptr = NULL;
+	dstImg.iptr = NULL;
 	char inKey = 0;
 
 	while (inKey != '9') {
@@ -117,6 +115,19 @@ int main()
 			dstImg = Embossing(srcImg);
 			ImgPrint(dstImg);
 			break;
+
+		case 'n': case 'N':
+			FreeImg(dstImg);
+			dstImg = AvgBlur(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'o': case 'O':
+			FreeImg(dstImg);
+			dstImg = XEdge(srcImg);
+			ImgPrint(dstImg);
+			break;
+
 
 
 		case 'x': case 'X':

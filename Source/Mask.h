@@ -1,11 +1,15 @@
 #pragma once
-#include <iostream>
+#include <stdio.h>
 #include "dataType.h"
 
-struct MSK
+typedef struct
 {
-	double** Mptr = nullptr;
-	uint8 Ksize = 3;
-};
+	double** Mptr;
+	int Ksize;
+}MSK;
 
-MSK setEmMask(uint8 Ksize);
+MSK setEmMask(int Ksize);
+
+MSK setAvgMask(int Ksize);
+
+MSK setXEMask(int Ksize);

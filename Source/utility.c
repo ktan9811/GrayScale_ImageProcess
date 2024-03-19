@@ -9,6 +9,15 @@ uint8 getUint8()
 	return inKey;
 }
 
+int getKSize()
+{
+	int inKey;
+	printf("Value ? : ");
+	scanf("%d", &inKey);
+	if (inKey % 2 == 0) inKey++;
+	return inKey;
+}
+
 char getCh()
 {
 	char inKey = _getch();

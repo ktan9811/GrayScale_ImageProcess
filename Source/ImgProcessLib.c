@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+#include <stdio.h>
 #include <Windows.h>
-#include <conio.h>
+#include <math.h>
 #include "ImgProcessLib.h"
 #include "dataType.h"
 
@@ -35,8 +35,8 @@ void FreeImg(IMG img)
 
 double** MallocMSK(MSK mask)
 {
-	uint8 HEIGHT = mask.Ksize;
-	uint8 WIDTH = mask.Ksize;
+	int HEIGHT = mask.Ksize;
+	int WIDTH = mask.Ksize;
 
 	mask.Mptr = (double**)malloc(sizeof(double*) * HEIGHT);
 	for (int i = 0; i < HEIGHT; i++)
@@ -77,13 +77,12 @@ void ImgPrint(IMG img)
 			SetPixel(hdc, j + 50, i + 250, RGB(px, px, px));
 		}
 	}
-
 }
 
 IMG ImgLoad(FILE* rfp)
 {
 	IMG RET;
-	int8 route[100] = "E:/LocalGit/Cpp_imgProcess/Source/Etc_Raw(squre)/";
+	int8 route[100] = "./Source/Etc_Raw(squre)/";
 	int8 fName[50];
 	uint64 fsize;
 
@@ -98,7 +97,8 @@ IMG ImgLoad(FILE* rfp)
 	fseek(rfp, 5L, SEEK_END);
 	fsize = ftell(rfp);
 	fclose(rfp);
-	RET.HEIGHT = RET.WIDTH = (int)sqrt(fsize);
+	RET.HEIGHT = (uint64)sqrt(fsize);
+	RET.WIDTH = (uint64)sqrt(fsize);
 
 	RET.iptr = (uint8**)malloc(sizeof(uint8*) * RET.HEIGHT);
 	for (int i = 0; i < RET.HEIGHT; i++)
@@ -118,7 +118,7 @@ void ImgSave(IMG img, FILE* wfp)
 	int WIDTH = img.WIDTH;
 	uint8** ptr = img.iptr;
 
-	int8 route[100] = "E:/LocalGit/Cpp_imgProcess/Source/Etc_Raw(squre)/";
+	int8 route[100] = "./Source/Out(squre)/";
 	int8 fName[50];
 
 	printf("Flie Name? ");
@@ -128,7 +128,7 @@ void ImgSave(IMG img, FILE* wfp)
 
 	wfp = fopen(route, "wb");
 	for (int i = 0; i < HEIGHT; i++)
-		fwrite(ptr, sizeof(unsigned char), WIDTH, wfp);
+		fwrite(ptr[i], sizeof(uint8), WIDTH, wfp);
 	fclose(wfp);
 	printf("Saved! \n");
 	return;
@@ -282,7 +282,7 @@ IMG ImgGamma(IMG img)
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[y][x] = (uint8)(255 * pow(255 / imptr[y][x], gamma));
+			RET.iptr[y][x] = (uint8)(255 * pow(imptr[y][x] / 255.0f, gamma));
 		}
 	}
 
@@ -417,7 +417,7 @@ IMG ZoomOut2(IMG img)
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[int(y / 2)][int(x / 2)] = imptr[y][x];
+			RET.iptr[(int)(y / 2)][(int)(x / 2)] = imptr[y][x];
 		}
 	}
 	return RET;
@@ -484,11 +484,13 @@ IMG RotateDegree(IMG img)
 
 IMG Embossing(IMG img)
 {
-	IMG RET, TEMP;
+	IMG RET;
 	
 	// 마스크 생성
-	MSK Mask;
-	uint8 ksize = 3;
+	MSK Mask, INTEMP, OUTTEMP;
+	int ksize;
+	printf("Write K Size\n");
+	ksize = getKSize();
 	Mask = setEmMask(ksize);
 
 	int HEIGHT = img.HEIGHT;
@@ -499,40 +501,183 @@ IMG Embossing(IMG img)
 	RET.WIDTH = WIDTH;
 	RET.iptr = MallocImg(RET);
 
-	TEMP.HEIGHT = HEIGHT + 2;
-	TEMP.WIDTH = WIDTH + 2;
-	TEMP.iptr = MallocImg(TEMP);
-	
+	INTEMP.Ksize = HEIGHT + ksize - 1;
+	INTEMP.Mptr = MallocMSK(INTEMP);
+
+	OUTTEMP.Ksize = HEIGHT;
+	OUTTEMP.Mptr = MallocMSK(OUTTEMP);
 
 	//TEMP 초기화
-	uint8 val = 127;
-	for (int y = 0; y < HEIGHT + 2; y++) {
-		for (int x = 0; x < WIDTH + 2; x++) {
-			TEMP.iptr[y][x] = val;
+	double val = 127;
+	for (int y = 0; y < INTEMP.Ksize; y++) {
+		for (int x = 0; x < INTEMP.Ksize; x++) {
+			INTEMP.Mptr[y][x] = val;
 		}
 	}
-	for (int y = 1; y < HEIGHT + 1; y++) {
-		for (int x = 1; x < WIDTH + 1; x++) {
-			TEMP.iptr[y][x] = imptr[y - 1][x - 1];
+
+	for (int y = (int)(ksize / 2); y < HEIGHT + (int)(ksize / 2); y++) {
+		for (int x = (int)(ksize / 2); x < WIDTH + (int)(ksize / 2); x++) {
+			INTEMP.Mptr[y][x] = imptr[y - (int)(ksize / 2)][x - (int)(ksize / 2)];
 		}
 	}
-	//출력 이미지 생성
-	double S = 0.0;
+
+	// 회선 연산
+	double S;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			S = 0.0;
 			for (int i = 0; i < Mask.Ksize; i++) {
 				for (int j = 0; j < Mask.Ksize; j++) {
-					S += (double)(Mask.Mptr[i][j] * TEMP.iptr[y + i][x + j]);
+					S += Mask.Mptr[i][j] * INTEMP.Mptr[y + i][x + j];
 				}
 			}
-			RET.iptr[y][x] = (uint8) S;
+			OUTTEMP.Mptr[y][x] = S;
+		}
+	}
+
+	// 출력값 보정
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			OUTTEMP.Mptr[y][x] += 127.0;
+		}
+	}
+
+	// 출력 이미지 생성
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (OUTTEMP.Mptr[y][x] < 0.0) RET.iptr[y][x] = 255;
+			else if (OUTTEMP.Mptr[y][x] > 255.0) RET.iptr[y][x] = 255;
+			else RET.iptr[y][x] = (uint8)OUTTEMP.Mptr[y][x];
 		}
 	}
 
 	//마스크와 임시 그림 Free
 	FreeMask(Mask);
-	FreeImg(TEMP);
+	FreeMask(INTEMP);
+	FreeMask(OUTTEMP);
 	return RET;
 }
 
+IMG AvgBlur(IMG img)
+{
+	IMG RET;
+
+	// 마스크 생성
+	MSK Mask, INTEMP;
+	
+	// 커널입력
+	int ksize;
+	printf("Write K Size\n");
+	ksize = getKSize();
+	Mask = setAvgMask(ksize);
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+	RET.iptr = MallocImg(RET);
+
+	INTEMP.Ksize = HEIGHT + ksize - 1;
+	INTEMP.Mptr = MallocMSK(INTEMP);
+
+	// TEMP 초기화
+	double val = 127;
+	for (int y = 0; y < INTEMP.Ksize; y++) {
+		for (int x = 0; x < INTEMP.Ksize; x++) {
+			INTEMP.Mptr[y][x] = val;
+		}
+	}
+
+	for (int y = (int)(ksize / 2); y < HEIGHT + (int)(ksize / 2); y++) {
+		for (int x = (int)(ksize / 2); x < WIDTH + (int)(ksize / 2); x++) {
+			INTEMP.Mptr[y][x] = imptr[y - (int)(ksize / 2)][x - (int)(ksize / 2)];
+		}
+	}
+
+	double S;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			S = 0.0;
+			for (int i = 0; i < Mask.Ksize; i++) {
+				for (int j = 0; j < Mask.Ksize; j++) {
+					S += Mask.Mptr[i][j] * INTEMP.Mptr[y + i][x + j];
+				}
+			}
+			RET.iptr[y][x] = S;
+		}
+	}
+
+
+	// 마스크와 임시 그림 Free
+	FreeMask(Mask);
+	FreeMask(INTEMP);
+	return RET;
+}
+
+IMG XEdge(IMG img)
+{
+	IMG RET;
+
+	// 마스크 생성
+	MSK Mask, INTEMP, OUTTEMP;
+	int ksize = 3;
+	Mask = setXEMask(ksize);
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+	RET.iptr = MallocImg(RET);
+
+	INTEMP.Ksize = HEIGHT + ksize - 1;
+	INTEMP.Mptr = MallocMSK(INTEMP);
+
+	OUTTEMP.Ksize = HEIGHT;
+	OUTTEMP.Mptr = MallocMSK(OUTTEMP);
+
+	//TEMP 초기화
+	double val = 127;
+	for (int y = 0; y < INTEMP.Ksize; y++) {
+		for (int x = 0; x < INTEMP.Ksize; x++) {
+			INTEMP.Mptr[y][x] = val;
+		}
+	}
+
+	for (int y = (int)(ksize / 2); y < HEIGHT + (int)(ksize / 2); y++) {
+		for (int x = (int)(ksize / 2); x < WIDTH + (int)(ksize / 2); x++) {
+			INTEMP.Mptr[y][x] = imptr[y - (int)(ksize / 2)][x - (int)(ksize / 2)];
+		}
+	}
+
+	// 회선 연산
+	double S;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			S = 0.0;
+			for (int i = 0; i < Mask.Ksize; i++) {
+				for (int j = 0; j < Mask.Ksize; j++) {
+					S += Mask.Mptr[i][j] * INTEMP.Mptr[y + i][x + j];
+				}
+			}
+			OUTTEMP.Mptr[y][x] = S;
+		}
+	}
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (OUTTEMP.Mptr[y][x] < 0.0) RET.iptr[y][x] = 0;
+			else if (OUTTEMP.Mptr[y][x] > 255.0) RET.iptr[y][x] = 255;
+			else RET.iptr[y][x] = (uint8)OUTTEMP.Mptr[y][x];
+		}
+	}
+
+	//마스크와 임시 그림 Free
+	FreeMask(Mask);
+	FreeMask(INTEMP);
+	FreeMask(OUTTEMP);
+	return RET;
+}

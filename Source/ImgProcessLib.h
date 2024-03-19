@@ -1,6 +1,6 @@
 #pragma once
 #define  _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+#include <stdio.h>
 #include "dataType.h"
 #include "utility.h"
 #include "Mask.h"
@@ -44,6 +44,8 @@ IMG RotateDegree(IMG img);
 
 //  拳家 康开 贸府 (Area Processing) Convolution / filter
 IMG Embossing(IMG img);
+IMG AvgBlur(IMG img);
+IMG XEdge(IMG img);
 IMG Gaussian(IMG img);
 
 

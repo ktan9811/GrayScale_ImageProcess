@@ -10,8 +10,8 @@
 #define uint32 unsigned __int32
 #define uint64 unsigned __int64
 
-struct IMG
+typedef struct
 {
-	uint8** iptr = nullptr;
-	int HEIGHT = 0, WIDTH = 0;
-};
+	uint8** iptr;
+	int HEIGHT, WIDTH;
+}IMG;
