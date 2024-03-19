@@ -12,4 +12,10 @@ MSK setEmMask(int Ksize);
 
 MSK setAvgMask(int Ksize);
 
-MSK setXEMask(int Ksize);
+MSK setXMask(int Ksize);
+
+MSK setYMask(int Ksize);
+
+MSK setPrewittXEMask(int Ksize);
+
+MSK setPrewittYEMask(int Ksize);

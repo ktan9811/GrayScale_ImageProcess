@@ -18,6 +18,7 @@ int main()
 	IMG dstImg;
 	srcImg.iptr = NULL;
 	dstImg.iptr = NULL;
+
 	char inKey = 0;
 
 	while (inKey != '9') {
@@ -92,6 +93,12 @@ int main()
 			ImgPrint(dstImg);
 			break;
 
+		case 'p': case 'P':
+			FreeImg(dstImg);
+			dstImg = ReverseY(srcImg);
+			ImgPrint(dstImg);
+			break;
+
 		case 'j': case 'J':
 			FreeImg(dstImg);
 			dstImg = RotateDegree(srcImg);
@@ -128,6 +135,23 @@ int main()
 			ImgPrint(dstImg);
 			break;
 
+		case 'Q': case 'q':
+			FreeImg(dstImg);
+			dstImg = YEdge(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 'r': case 'R':
+			FreeImg(dstImg);
+			dstImg = PrewittXEdge(srcImg);
+			ImgPrint(dstImg);
+			break;
+
+		case 's': case 'S':
+			FreeImg(dstImg);
+			dstImg = PrewittYEdge(srcImg);
+			ImgPrint(dstImg);
+			break;
 
 
 		case 'x': case 'X':

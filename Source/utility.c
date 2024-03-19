@@ -30,8 +30,9 @@ void PrintMenu()
 	puts("GrayScale IMG Processing\n");
 	puts("0.Open, 1.Save 2.Copy to Src\n");
 	puts("A.Print Src, B.Bright, C.Dark, D.Inverse, E.BinByPoint, F.Gamma\n");
-	puts("G.Zoom In, H.Zoom Out, I.ReverseX, J.Rotate By Degree\n");
-	puts("K.Hist Strech, L.Hist Equal, X.Quit\n");
+	puts("G.Zoom In, H.Zoom Out, I.ReverseX, P.ReverseY, J.Rotate By Degree\n");
+	puts("K.Hist Strech, L.Hist Equal\n");
+	puts("M.Embossing, N.AvgBlur, O.XEdge, Q.YEdge, R.Prewitt X, S.Prewitt Y\nX.Quit\n");
 }
 
 int RetMid(IMG img) {

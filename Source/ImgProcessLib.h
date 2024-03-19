@@ -36,7 +36,7 @@ IMG ZoomIn2(IMG img);
 IMG ZoomOut2(IMG img);
 
 IMG ReverseX(IMG img);
-//IMG ReverseY(IMG img);
+IMG ReverseY(IMG img);
 //IMG MoveXY(IMG img);
 
 IMG RotateDegree(IMG img);
@@ -46,6 +46,9 @@ IMG RotateDegree(IMG img);
 IMG Embossing(IMG img);
 IMG AvgBlur(IMG img);
 IMG XEdge(IMG img);
+IMG YEdge(IMG img);
+IMG PrewittXEdge(IMG img);
+IMG PrewittYEdge(IMG img);
 IMG Gaussian(IMG img);
 
 

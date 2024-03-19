@@ -393,9 +393,9 @@ IMG ZoomIn2(IMG img)
 
 	RET.iptr = MallocImg(RET);
 
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[y * 2][x * 2] = imptr[y][x];
+	for (int y = 0; y < RET.HEIGHT; y++) {
+		for (int x = 0; x < RET.WIDTH; x++) {
+			RET.iptr[y][x] = imptr[y/2][x/2];
 		}
 	}
 
@@ -438,9 +438,44 @@ IMG ReverseX(IMG img)
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			RET.iptr[y][x] ^= imptr[y][WIDTH - x - 1];
-			imptr[y][WIDTH - x - 1] ^= RET.iptr[y][x];
-			RET.iptr[y][x] ^= imptr[y][WIDTH - x - 1];
+			RET.iptr[y][x] = imptr[y][x];
+		}
+	}
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH / 2; x++) {
+			RET.iptr[y][x] ^= RET.iptr[y][WIDTH - x - 1];
+			RET.iptr[y][WIDTH - x - 1] ^= RET.iptr[y][x];
+			RET.iptr[y][x] ^= RET.iptr[y][WIDTH - x - 1];
+		}
+	}
+	return RET;
+}
+
+IMG ReverseY(IMG img)
+{
+	IMG RET;
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+
+	RET.iptr = MallocImg(RET);
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			RET.iptr[y][x] = imptr[y][x];
+		}
+	}
+
+	for (int y = 0; y < HEIGHT / 2; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			RET.iptr[y][x] ^= RET.iptr[HEIGHT - y - 1][x];
+			RET.iptr[HEIGHT - y - 1][x] ^= RET.iptr[y][x];
+			RET.iptr[y][x] ^= RET.iptr[HEIGHT - y - 1][x];
 		}
 	}
 	return RET;
@@ -623,7 +658,206 @@ IMG XEdge(IMG img)
 	// 마스크 생성
 	MSK Mask, INTEMP, OUTTEMP;
 	int ksize = 3;
-	Mask = setXEMask(ksize);
+	Mask = setXMask(ksize);
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+	RET.iptr = MallocImg(RET);
+
+	INTEMP.Ksize = HEIGHT + ksize - 1;
+	INTEMP.Mptr = MallocMSK(INTEMP);
+
+	OUTTEMP.Ksize = HEIGHT;
+	OUTTEMP.Mptr = MallocMSK(OUTTEMP);
+
+	//TEMP 초기화
+	double val = 127;
+	for (int y = 0; y < INTEMP.Ksize; y++) {
+		for (int x = 0; x < INTEMP.Ksize; x++) {
+			INTEMP.Mptr[y][x] = val;
+		}
+	}
+
+	for (int y = (int)(ksize / 2); y < HEIGHT + (int)(ksize / 2); y++) {
+		for (int x = (int)(ksize / 2); x < WIDTH + (int)(ksize / 2); x++) {
+			INTEMP.Mptr[y][x] = imptr[y - (int)(ksize / 2)][x - (int)(ksize / 2)];
+		}
+	}
+
+	// 회선 연산
+	double S;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			S = 0.0;
+			for (int i = 0; i < Mask.Ksize; i++) {
+				for (int j = 0; j < Mask.Ksize; j++) {
+					S += Mask.Mptr[i][j] * INTEMP.Mptr[y + i][x + j];
+				}
+			}
+			OUTTEMP.Mptr[y][x] = S;
+		}
+	}
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (OUTTEMP.Mptr[y][x] < 0.0) RET.iptr[y][x] = 0;
+			else if (OUTTEMP.Mptr[y][x] > 255.0) RET.iptr[y][x] = 255;
+			else RET.iptr[y][x] = (uint8)OUTTEMP.Mptr[y][x];
+		}
+	}
+
+	//마스크와 임시 그림 Free
+	FreeMask(Mask);
+	FreeMask(INTEMP);
+	FreeMask(OUTTEMP);
+	return RET;
+}
+
+IMG YEdge(IMG img)
+{
+	IMG RET;
+
+	// 마스크 생성
+	MSK Mask, INTEMP, OUTTEMP;
+	int ksize = 3;
+	Mask = setYMask(ksize);
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+	RET.iptr = MallocImg(RET);
+
+	INTEMP.Ksize = HEIGHT + ksize - 1;
+	INTEMP.Mptr = MallocMSK(INTEMP);
+
+	OUTTEMP.Ksize = HEIGHT;
+	OUTTEMP.Mptr = MallocMSK(OUTTEMP);
+
+	//TEMP 초기화
+	double val = 127;
+	for (int y = 0; y < INTEMP.Ksize; y++) {
+		for (int x = 0; x < INTEMP.Ksize; x++) {
+			INTEMP.Mptr[y][x] = val;
+		}
+	}
+
+	for (int y = (int)(ksize / 2); y < HEIGHT + (int)(ksize / 2); y++) {
+		for (int x = (int)(ksize / 2); x < WIDTH + (int)(ksize / 2); x++) {
+			INTEMP.Mptr[y][x] = imptr[y - (int)(ksize / 2)][x - (int)(ksize / 2)];
+		}
+	}
+
+	// 회선 연산
+	double S;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			S = 0.0;
+			for (int i = 0; i < Mask.Ksize; i++) {
+				for (int j = 0; j < Mask.Ksize; j++) {
+					S += Mask.Mptr[i][j] * INTEMP.Mptr[y + i][x + j];
+				}
+			}
+			OUTTEMP.Mptr[y][x] = S;
+		}
+	}
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (OUTTEMP.Mptr[y][x] < 0.0) RET.iptr[y][x] = 0;
+			else if (OUTTEMP.Mptr[y][x] > 255.0) RET.iptr[y][x] = 255;
+			else RET.iptr[y][x] = (uint8)OUTTEMP.Mptr[y][x];
+		}
+	}
+
+	//마스크와 임시 그림 Free
+	FreeMask(Mask);
+	FreeMask(INTEMP);
+	FreeMask(OUTTEMP);
+	return RET;
+}
+
+
+IMG PrewittXEdge(IMG img)
+{
+	IMG RET;
+
+	// 마스크 생성
+	MSK Mask, INTEMP, OUTTEMP;
+	int ksize = 3;
+	Mask = setPrewittXEMask(ksize);
+
+	int HEIGHT = img.HEIGHT;
+	int WIDTH = img.WIDTH;
+	uint8** imptr = img.iptr;
+
+	RET.HEIGHT = HEIGHT;
+	RET.WIDTH = WIDTH;
+	RET.iptr = MallocImg(RET);
+
+	INTEMP.Ksize = HEIGHT + ksize - 1;
+	INTEMP.Mptr = MallocMSK(INTEMP);
+
+	OUTTEMP.Ksize = HEIGHT;
+	OUTTEMP.Mptr = MallocMSK(OUTTEMP);
+
+	//TEMP 초기화
+	double val = 127;
+	for (int y = 0; y < INTEMP.Ksize; y++) {
+		for (int x = 0; x < INTEMP.Ksize; x++) {
+			INTEMP.Mptr[y][x] = val;
+		}
+	}
+
+	for (int y = (int)(ksize / 2); y < HEIGHT + (int)(ksize / 2); y++) {
+		for (int x = (int)(ksize / 2); x < WIDTH + (int)(ksize / 2); x++) {
+			INTEMP.Mptr[y][x] = imptr[y - (int)(ksize / 2)][x - (int)(ksize / 2)];
+		}
+	}
+
+	// 회선 연산
+	double S;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			S = 0.0;
+			for (int i = 0; i < Mask.Ksize; i++) {
+				for (int j = 0; j < Mask.Ksize; j++) {
+					S += Mask.Mptr[i][j] * INTEMP.Mptr[y + i][x + j];
+				}
+			}
+			OUTTEMP.Mptr[y][x] = S;
+		}
+	}
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (OUTTEMP.Mptr[y][x] < 0.0) RET.iptr[y][x] = 0;
+			else if (OUTTEMP.Mptr[y][x] > 255.0) RET.iptr[y][x] = 255;
+			else RET.iptr[y][x] = (uint8)OUTTEMP.Mptr[y][x];
+		}
+	}
+
+	//마스크와 임시 그림 Free
+	FreeMask(Mask);
+	FreeMask(INTEMP);
+	FreeMask(OUTTEMP);
+	return RET;
+}
+
+IMG PrewittYEdge(IMG img)
+{
+	IMG RET;
+
+	// 마스크 생성
+	MSK Mask, INTEMP, OUTTEMP;
+	int ksize = 3;
+	Mask = setPrewittYEMask(ksize);
 
 	int HEIGHT = img.HEIGHT;
 	int WIDTH = img.WIDTH;
