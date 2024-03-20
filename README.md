@@ -3,10 +3,11 @@
 <p align="center" width = "100%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/2c90792e-a617-483e-bbc2-60151e474032" align="center" width="30%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/860de86c-d82d-4acc-a326-01ce41092745" align="center" width="30%"> 
-<figcaption align="center"> Gray Scale Lenna </figcaption></p>
+<figcaption align="center"> </figcaption></p>
 
  # 목표
  C언어 기반의 개인 Gray Scale 영상처리 라이브러리 구현
+ 
 <p align="center" width = "100%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/56e1e1e6-e005-463b-8d4c-ab87dd966540" align="center" width="30%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/0e71e6f5-296f-457e-9bc1-adda5cae7d1e" align="center" width="30%"> 
@@ -28,7 +29,7 @@
 # 좌표 변환
 <p align="center" width = "100%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/5bb3d5ae-3210-4a85-9eb2-bfaee217bbbe" align="center" width="30%">  
- <img src="hhttps://github.com/ktan9811/C_imgProcess/assets/86091469/c672c4c2-1b8b-407a-b1a1-d12a18ee5e3f" align="center" width="30%"> 
+ <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/b3b446da-cfa3-4b5d-ae3d-4ec02dccec3e" align="center" width="30%"> 
 <figcaption align="center"> </figcaption></p>
 
 # 화소 영역 처리
