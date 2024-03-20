@@ -1,7 +1,15 @@
-# Cpp_imgProcess
+# C GrayScale image Process
  [Intel] 엣지 AI S/W 아카데미에서 진행하는 개인 영상처리 프로젝트
- ![image](https://github.com/ktan9811/Cpp_imgProcess/assets/86091469/7903fd95-d906-45ac-b399-288877eba47f)
+![LENA512](https://github.com/ktan9811/C_imgProcess/assets/86091469/2c90792e-a617-483e-bbc2-60151e474032) | ![LENAHS](https://github.com/ktan9811/C_imgProcess/assets/86091469/860de86c-d82d-4acc-a326-01ce41092745)
 
 
  # 목표
- C/C++ 기반의 개인 영상처리 라이브러리 구현
+ C언어 기반의 개인 Gray Scale 영상처리 라이브러리 구현
+
+# 화소 점 처리
+
+# 히스토그램 처리
+
+# 좌표 변환
+
+# 화소 영역 처리
