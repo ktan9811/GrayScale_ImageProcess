@@ -1,5 +1,7 @@
 # GrayScale image Process
  [Intel] 엣지 AI S/W 아카데미에서 진행하는 개인 영상처리 프로젝트
+
+ 
 C와 Python으로 화소 점처리, 좌표 변환, 화소 영역 처리 등 다양한 영상처리 알고리즘을 구현을 목표함
 
 <p align="center" width = "100%">  
