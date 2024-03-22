@@ -5,13 +5,15 @@ C와 Python으로 화소 점처리, 좌표 변환, 화소 영역 처리 등 다�
 <p align="center" width = "100%">  
  <img src="https://github.com/ktan9811/GrayScale_ImageProcess/assets/86091469/b3ec54c4-6e8b-4518-9cbe-a7c5255aaba0" align="center" width=70%">  
 <figcaption align="center">
-C 환경 : Window 11 / VS 2022
 Python 환경 : Linux 
+
+ 
 
 <p align="center" width = "100%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/2c90792e-a617-483e-bbc2-60151e474032" align="center" width="30%">  
  <img src="https://github.com/ktan9811/C_imgProcess/assets/86091469/860de86c-d82d-4acc-a326-01ce41092745" align="center" width="30%"> 
 <figcaption align="center"> </figcaption></p>
+C 환경 : Window 11 / VS 2022
 
  # 목표
  C언어 기반의 개인 Gray Scale 영상처리 라이브러리 구현
